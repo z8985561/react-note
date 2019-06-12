@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>JSX描述UI信息</title>
+  <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+  <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+  <!-- 生产环境中不建议使用 -->
+  <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="text/babel">
+    class Header extends React.Component{
+      render(){
+        return (
+          <header>
+            <h1>hello react.js</h1>
+          </header>
+        )
+      }
+    }
+    class Comp1 extends React.Component{
+      render(){
+        let name = "my component";
+        return (
+          <header>
+            <h1>hello {name}</h1>
+          </header>
+        )
+      }
+    }
+    class Comp2 extends React.Component{
+      render(){
+        let isBold = true;
+        return(
+          <header>
+            <div>hello {isBold?<strong>Comp2</strong>:<span>Comp2</span>}</div>
+          </header>
+        )
+      }
+    }
+    ReactDOM.render(
+      <div>
+        <Header />
+        <Comp1 />
+        <Comp2 />
+      </div>,
+      document.querySelector('#app')
+    )
+  </script>
+</body>
+</html>

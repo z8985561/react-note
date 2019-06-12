@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script src="./demo.js"></script>
+  <script>
+    const ele = document.querySelector("#app");
+    let likeBtn1 = new LikeButton();
+    let likeBtn2 = new LikeButton();
+    ele.appendChild(likeBtn1.render());
+    ele.appendChild(likeBtn2.render());
+  </script>
+</body>
+</html>

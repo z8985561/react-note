@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>JSX描述UI信息</title>
+  <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+  <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+  <!-- 生产环境中不建议使用 -->
+  <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="text/babel">
+    class Title extends React.Component{
+      render(){
+        return (
+          <h1>This is Title</h1>
+        )
+      }
+    }
+
+    class Header extends React.Component{
+      render(){
+        return (
+          <header>
+            <Title />
+            <h2>This is Header</h2>
+          </header>
+        )
+      }
+    }
+    class Main extends React.Component{
+      render(){
+        return (
+          <div>
+            <h1>This is Main</h1>
+          </div>
+        )
+      }
+    }
+    class Footer extends React.Component{
+      render(){
+        return (
+          <footer>
+            <h1>This is Footer</h1>
+          </footer>
+        )
+      }
+    }
+
+    ReactDOM.render(
+      <div>
+        <Header />
+        <Main />
+        <Footer />
+      </div>,
+      document.querySelector('#app')
+    )
+  </script>
+</body>
+</html>
