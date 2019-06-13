@@ -11,10 +11,8 @@
   <script src="./demo.js"></script>
   <script>
     const ele = document.querySelector("#app");
-    let likeBtn1 = new LikeButton();
-    let likeBtn2 = new LikeButton();
-    ele.appendChild(likeBtn1.render());
-    ele.appendChild(likeBtn2.render());
+    mount(new Header({color:"red"}),ele)
+    mount(new LikeButton({bgColor:"#ff0",color:"#f0f",fontSize:"24px"}),ele)
   </script>
 </body>
 </html>

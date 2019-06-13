@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>事件监听</title>
+  <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+  <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+  <!-- 生产环境中不建议使用 -->
+  <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="text/babel">
+   class LikeButton extends React.Component{
+     constructor(){
+       super()
+       this.state = {
+         isLike:false
+       }
+     }
+     changeLikeText(){
+       console.log(this.state.isLike);
+       this.state.isLike = !this.state.isLike
+     }
+     render() {
+       return (
+         <button onClick={this.changeLikeText.bind(this)}>{this.state.isLike?"取消":"关注"}</button>
+       )
+     }
+   }
+   ReactDOM.render(
+     <LikeButton />,
+     document.querySelector('#app')
+   )
+  </script>
+</body>
+</html>
