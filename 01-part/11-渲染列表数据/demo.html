@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>渲染列表数据</title>
+  <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+  <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+  <!-- 生产环境中不建议使用 -->
+  <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="text/babel">
+  const Component = React.Component;
+
+
+  class UserItem extends Component{
+    render(){
+      const user = this.props.user;
+      return (
+        <div>
+          <p>name:{user.username}</p>
+          <p>age:{user.age}</p>
+          <p>gender:{user.gender}</p>
+          <hr />
+        </div>
+      )
+    }
+  }
+  class UserList extends Component{
+    render(){
+        const users = [
+          { username: 'Jerry', age: 21, gender: 'male' },
+          { username: 'Tomy', age: 22, gender: 'male' },
+          { username: 'Lily', age: 19, gender: 'female' },
+          { username: 'Lucy', age: 20, gender: 'female' }
+        ]
+      return (
+        <div>
+          {users.map((user,i)=><UserItem user={user} key={i}/>)}
+        </div>
+      )
+    }
+  }
+  ReactDOM.render(
+    <UserList />,
+    document.querySelector('#app')
+  )
+  </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>配置组件的 props</title>
+  <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+  <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+  <!-- 生产环境中不建议使用 -->
+  <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="text/babel">
+    const Compnent = React.Component;
+    class LikeButton extends Compnent{
+      constructor(){
+        super();
+        this.state = {
+          isLike:false
+        }
+      }
+      changeLikeText(){
+        this.setState({
+          isLike:!this.state.isLike
+        })
+      }
+      render(){
+        let likeText = this.props.likeText || "取消";
+        let unLikeText = this.props.unLikeText || "点赞";
+        return(
+          <button onClick={this.changeLikeText.bind(this)}>
+            {this.state.isLike?likeText:unLikeText}
+          </button>
+        )
+      }
+    }
+
+    class LikeButton2 extends Compnent{
+      static defaultProps ={
+        likeText:"取消",
+        unLikeText:"点赞"
+      }
+      constructor(){
+        super();
+        this.state={
+          isLike:false
+        }
+      }
+      changeLikeText(){
+        this.setState({
+          isLike:!this.state.isLike
+        })
+      }
+      render(){
+        return(
+          <button onClick={this.changeLikeText.bind(this)}>
+            {this.state.isLike?this.props.likeText:this.props.unLikeText}
+          </button>
+        )
+      }
+    }
+    class Main extends Compnent{
+      constructor(){
+        super()
+        this.state = {
+          likeText:"已赞",
+          unLikeText:"赞"
+        }
+      }
+      changeLikeText(){
+        this.setState({
+          likeText:"取消",
+          unLikeText:"点赞"
+        })
+      }
+      render(){
+        return (
+          <div>
+          <LikeButton likeText="unlike"  unLikeText="like"/>
+          <LikeButton2 likeText={this.state.likeText}  unLikeText={this.state.unLikeText}/>
+          <button onClick={this.changeLikeText.bind(this)}>修改text</button>
+          </div>
+        )
+      }
+    }
+
+    ReactDOM.render(
+      <Main />,
+      document.querySelector('#app')
+    )
+  </script>
+</body>
+</html>

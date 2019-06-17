@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>评论功能</title>
+  <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+  <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+  <!-- 生产环境中不建议使用 -->
+  <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+
+<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+  <div id="app" style="margin-top:50px;"></div>
+  <script type="text/babel">
+   const Component = React.Component;
+   class CommentInput extends Component{
+     constructor(){
+       super();
+       this.state ={
+         comment:{
+           userName:"",
+           commentText:""
+         }
+       }
+     }
+     changeUserName(e){
+        let comment = this.state.comment;
+        comment.userName = e.target.value;
+        this.setState({
+          comment
+        })
+     }
+     changeCommentText(e){
+        let comment = this.state.comment;
+        comment.commentText = e.target.value;
+        this.setState({
+          comment
+        })
+     }
+     submitComment(){
+       let comment = this.state.comment
+       if(!comment){return}
+       if(!comment.userName){
+         alert('请输入用户名');
+         return;
+       }
+       if(!comment.commentText){
+         alert('请输入评论内容')
+         return;
+       }
+        if(this.props.sendComment){
+          this.props.sendComment(comment);
+          this.setState({
+            comment:{
+              userName:"",
+              commentText:""
+            }
+          })
+        }
+     }
+     render(){
+       return (
+         <div className="form-horizontal row">
+            <div className="form-group">
+              <label className="col-sm-2 control-label">用户名</label>
+              <div className="col-sm-10">
+                <input type="text" className="form-control" placeholder="请输入用户名"
+                onChange={this.changeUserName.bind(this)}
+                value={this.state.comment.userName}
+                />
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="col-sm-2 control-label">评论内容</label>
+              <div className="col-sm-10">
+                <input type="text" className="form-control" placeholder="请输入评论内容"
+                onChange={this.changeCommentText.bind(this)}
+                value={this.state.comment.commentText}
+                />
+              </div>
+            </div>
+            <div className="form-group">
+              <div className="col-sm-offset-2 col-sm-10">
+                <button className="btn btn-primary"
+                onClick={this.submitComment.bind(this)}
+                >发布</button>
+              </div>
+            </div>
+         </div>
+       )
+     }
+   }
+
+    class CommentItem extends Component{
+      constructor(){
+        super();
+      }
+      render(){
+        return(
+          <tr>
+            <td>{this.props.comment.userName}</td>
+            <td>{this.props.comment.commentText}</td>
+          </tr>
+        )
+      }
+    }
+
+    class CommentList extends Component{
+      static defaultProps = {
+        commentList:[]
+      }
+      constructor(){
+        super();
+      }
+      render(){
+        return(
+          <div className="row">
+            <table className="table table-striped">
+              <tbody>
+                {this.props.commentList.map((item,i)=> <CommentItem comment={item} key={i}/>)}
+              </tbody>
+            </table>
+          </div>
+        )
+      }
+    }
+
+    class CommentAPP extends Component{
+      constructor(){
+        super();
+        this.state={
+          comments:[{
+            userName:"tomy",
+            commentText:"这个组件可能是我们案例里面最简单的组件了，它只负责每条评论的具体显示。你只需要给它的 props 中传入一个 comment 对象，它就会把该对象中的 username 和 content 渲染到页面上。马上把 Comment 应用到 CommentList 当中，修改 CommentList.js 代码"
+          }]
+        }
+      }
+      receiveComment(comment){
+        let comments = this.state.comments;
+        comments.push(comment);
+        console.log(comments);
+        this.setState({
+          comments
+        })
+      }
+      render(){
+        return(
+          <div className="container">
+          <CommentInput sendComment={this.receiveComment.bind(this)}/>
+          <div className="row">
+            <hr />
+          </div>
+          <CommentList commentList={this.state.comments}/>
+          </div>
+        )
+      }
+    }
+    ReactDOM.render(
+      <CommentAPP />,
+      document.querySelector('#app')
+    )
+  </script>
+</body>
+</html>
