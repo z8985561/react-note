@@ -17,13 +17,42 @@
   <div id="app" style="margin-top:50px;"></div>
   <script type="text/babel">
    const Component = React.Component;
+    // 设置缓存
+    function setCache(key,value) {
+      let localStorage = window.localStorage;
+      if(typeof key != "string"){
+        return alert("key值类型不为string");
+      }
+      if(typeof value == "object"){
+        let v = JSON.stringify(value);
+        localStorage.setItem(key,v)
+      }
+      if(typeof value == "string"){
+        localStorage.setItem(key,value)
+      }
+    }
+    // 获取缓存
+    function getCache(key) {
+      let localStorage = window.localStorage;
+      let value;
+      try {
+        value = localStorage.getItem(key);
+      } catch (error) {
+        console.log(error);
+      }
+      return value;
+    }
+
+
+
    class CommentInput extends Component{
      constructor(){
        super();
        this.state ={
          comment:{
            userName:"",
-           commentText:""
+           commentText:"",
+           date:""
          }
        }
      }
@@ -52,16 +81,41 @@
          alert('请输入评论内容')
          return;
        }
-        if(this.props.sendComment){
+      if(this.props.sendComment){
+        comment.date = parseInt(new Date().getTime()/1e3)
+        new Promise((resolve,reject)=>{
+          console.log(comment);
+
           this.props.sendComment(comment);
+          resolve()
+        }).then((result)=>{
+          comment.commentText = "";
+          comment.date = 0;
           this.setState({
-            comment:{
-              userName:"",
-              commentText:""
-            }
+            comment
           })
+        })
+        if(getCache("userName") != this.state.comment.userName){
+          console.log("设置userName缓存");
+          setCache("userName",this.state.comment.userName);
         }
+      }
      }
+    //什么周期 挂载前
+    componentWillMount(){
+      let userName = getCache("userName");
+      if(userName && typeof userName == "string"){
+        let comment = this.state.comment;
+        comment.userName = userName;
+        this.setState({
+          comment
+        })
+      }
+    }
+    //生命周期 挂载后
+    componentDidMount(){
+      this.textarea.focus();
+    }
      render(){
        return (
          <div className="form-horizontal row">
@@ -77,7 +131,7 @@
             <div className="form-group">
               <label className="col-sm-2 control-label">评论内容</label>
               <div className="col-sm-10">
-                <input type="text" className="form-control" placeholder="请输入评论内容"
+                <textarea type="text" row="10" ref={(textarea)=>this.textarea = textarea} className="form-control" placeholder="请输入评论内容"
                 onChange={this.changeCommentText.bind(this)}
                 value={this.state.comment.commentText}
                 />
@@ -98,12 +152,53 @@
     class CommentItem extends Component{
       constructor(){
         super();
+        this.state ={
+          time:0
+        }
+      }
+      switchTime(date){
+        let diff = parseInt(new Date().getTime()/1e3) - date;
+        let time;
+        if(diff < 60 ){
+          time = `${diff}秒钟前`
+        }else if(diff >= 60 && diff < 3600 ){
+          time = `${parseInt(diff/60)}分钟前`
+        }else if(diff >= 3600 && diff < 86400){
+          time = `${parseInt(diff/60/24)}小时前`
+        }else if(diff >= 86400 && diff < 2592000){
+          time = `${parseInt(diff/60/24/30)}天前`
+        }
+        this.setState({
+          time
+        })
+      }
+      handleDeleteComment () {
+        if (this.props.onDeleteComment) {
+          this.props.onDeleteComment(this.props.index)
+        }
+      }
+      _getProcessedContent(commentText){
+        return commentText.replace(/`([\S\s]+?)`/g, '<code>$1</code>')
+      }
+      componentWillMount(){
+        this.state.date = this.props.comment.date
+        this.switchTime(this.state.date)
+        this.timer = setInterval(() => {
+          this.switchTime.bind(this)(this.state.date)
+        }, 5000);
+      }
+      commentUnWillMount(){
+        clearInterval(this.timer)
       }
       render(){
         return(
           <tr>
-            <td>{this.props.comment.userName}</td>
-            <td>{this.props.comment.commentText}</td>
+            <td width="20%">{this.props.comment.userName}</td>
+            <td>
+              <p dangerouslySetInnerHTML={{__html:this._getProcessedContent(this.props.comment.commentText)}}></p>
+              <p className="text-right">{this.state.time}</p>
+              <button onClick={this.handleDeleteComment.bind(this)}>删除</button>
+            </td>
           </tr>
         )
       }
@@ -116,12 +211,17 @@
       constructor(){
         super();
       }
+      handleDeleteComment (index) {
+        if (this.props.onDeleteComment) {
+          this.props.onDeleteComment(index);
+        }
+      }
       render(){
         return(
           <div className="row">
             <table className="table table-striped">
               <tbody>
-                {this.props.commentList.map((item,i)=> <CommentItem comment={item} key={i}/>)}
+                {this.props.commentList.map((item,i)=> <CommentItem comment={item} onDeleteComment={this.handleDeleteComment.bind(this)} key={i} index={i}/>)}
               </tbody>
             </table>
           </div>
@@ -133,19 +233,35 @@
       constructor(){
         super();
         this.state={
-          comments:[{
-            userName:"tomy",
-            commentText:"这个组件可能是我们案例里面最简单的组件了，它只负责每条评论的具体显示。你只需要给它的 props 中传入一个 comment 对象，它就会把该对象中的 username 和 content 渲染到页面上。马上把 Comment 应用到 CommentList 当中，修改 CommentList.js 代码"
-          }]
+          comments:[]
+        }
+      }
+      // 挂载前
+      componentWillMount(){
+        let comments = JSON.parse(getCache("comments"));
+        if(comments){
+          this.setState({
+            comments
+          })
         }
       }
       receiveComment(comment){
-        let comments = this.state.comments;
-        comments.push(comment);
-        console.log(comments);
+        let comments =  this.state.comments;
+        // 解决对象引用问题 导致内容出错的问题
+        let item = JSON.parse(JSON.stringify(comment));
+        comments.push(item);
         this.setState({
           comments
         })
+        setCache("comments",comments)
+      }
+      handleDeleteComment(index){
+        let comments =  this.state.comments;
+        comments.splice(index,1)
+        this.setState({
+          comments
+        })
+        setCache("comments",comments)
       }
       render(){
         return(
@@ -154,7 +270,7 @@
           <div className="row">
             <hr />
           </div>
-          <CommentList commentList={this.state.comments}/>
+          <CommentList commentList={this.state.comments} onDeleteComment={this.handleDeleteComment.bind(this)}/>
           </div>
         )
       }
@@ -166,3 +282,6 @@
   </script>
 </body>
 </html>
+
+
+
