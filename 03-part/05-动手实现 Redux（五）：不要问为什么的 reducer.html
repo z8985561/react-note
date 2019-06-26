@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>动手实现 Redux（五）：不要问为什么的 reducer</title>
+</head>
+<body>
+  <h1 id="title"></h1>
+  <h2 id="content"></h2>
+  <script>
+    function articleReducer(state,action){
+      if(!state){
+        return {
+          title:{
+            text:"动手实现 Redux（五）",
+            color:"#069"
+          },
+          content:{
+            text:"不要问为什么的 reducer"
+          }
+        }
+      }
+      switch(action.type){
+        case "UPDATE_TITLE_TEXT":
+        return {
+          ...state,
+          title:{
+            ...state.title,
+            text:action.text
+          }
+        };
+        case "UPDATE_TITLE_COLOR":
+        return {
+          ...state,
+          title:{
+            ...state.title,
+            color:"#0f9"
+          }
+        };
+        default:
+        return state;
+      }
+    }
+    function createStore(reducer){
+      let state = null;
+      const listeners = [];
+      const subscribe = (listener)=> listeners.push(listener);
+      const getState = ()=> state;
+      const dispatch = (action)=>{
+        state = reducer(state,action);
+        listeners.forEach(listener=>listener())
+      }
+      dispatch({});
+      return {getState,dispatch,subscribe}
+    }
+
+    const store = createStore(articleReducer);
+    store.subscribe(()=>{
+      console.log(store.getState())
+    })
+    store.dispatch({type:"UPDATE_TITLE_TEXT",text:"《React.js 小书》"})
+    store.dispatch({type:"UPDATE_TITLE_COLOR",color:"#f60"})
+  </script>
+</body>
+</html>

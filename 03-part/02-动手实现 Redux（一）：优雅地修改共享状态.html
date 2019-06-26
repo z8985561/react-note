@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>动手实现 Redux（一）：优雅地修改共享状态</title>
+</head>
+<body>
+  <h1 id="title"></h1>
+  <h2 id="content"></h2>
+  <script>
+    // 我们定义一个函数，叫 dispatch，它专门负责数据的修改
+    // 所有对数据的操作必须通过 dispatch 函数。
+    function dispatch (action){
+      switch(action.type){
+        case "UPDATE_TITLE_TEXT":
+          appState.title.text = action.text;
+        break;
+        case "UPDATE_TITLE_COLOR":
+          appState.title.color = action.color;
+        default:
+        break;
+      }
+    }
+    const appState = {
+      title:{
+        text:"React.js 小书",
+        color:"red"
+      },
+      content:{
+        text:"React.js 小书内容。",
+        color:"blue"
+      }
+    }
+
+    function renderApp(appState){
+      titleRender(appState.title);
+      contentRender(appState.content);
+    }
+
+    function titleRender(title){
+      const titleDOM = document.querySelector('#title');
+      titleDOM.innerHTML = title.text;
+      titleDOM.style.color = title.color;
+    }
+
+    function contentRender(content){
+      const contentDOM = document.querySelector('#content');
+      contentDOM.innerHTML = content.text;
+      contentDOM.style.color = content.color;
+    }
+    renderApp(appState)
+    dispatch({type:"UPDATE_TITLE_TEXT",text:"《React.js 小书》"})
+    dispatch({type:"UPDATE_TITLE_COLOR",color:"#666"})
+    setTimeout(()=>{
+      renderApp(appState)
+    },3000)
+  </script>
+</body>
+</html>
